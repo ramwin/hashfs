@@ -13,6 +13,13 @@ Typical use cases for this kind of system are ones where:
 - It's desirable to have no duplicate files (e.g. user uploads).
 - File metadata is stored elsewhere (e.g. in a database).
 
+Extra
+=====
+this was forked from https://github.com/dgilland/hashfs/ and it supports:
+
+- init all directory to optimize the performance
+- support put file with hashid
+- change str to pathlib.Path
 
 Features
 ========
