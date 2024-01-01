@@ -1,18 +1,19 @@
 """Module for HashFS class.
 """
 
-from pathlib import Path
+import glob
+import hashlib
+import io
+import os
+import shutil
+import sys
 
 from collections import namedtuple
 from contextlib import contextmanager, closing
 from dataclasses import dataclass
-import glob
-import hashlib
-import sys
-import io
-import os
-import shutil
+from pathlib import Path
 from tempfile import NamedTemporaryFile
+from typing import Optional
 
 from .utils import issubdir, shard, create_hex_directory
 from ._compat import to_bytes, walk, FileExistsError
@@ -273,11 +274,11 @@ class HashFS(object):
         except FileExistsError:
             assert os.path.isdir(path), "expected {} to be a directory".format(path)
 
-    def relpath(self, path):
+    def relpath(self, path: Path) -> Path:
         """Return `path` relative to the :attr:`root` directory."""
         return path.relative_to(self.root)
 
-    def realpath(self, file):
+    def realpath(self, file) -> Path:
         """Attempt to determine the real path of a file id or path through
         successive checking of candidate paths. If the real path is stored with
         an extension, the path is considered a match if the basename matches
@@ -285,7 +286,7 @@ class HashFS(object):
         """
         # Check for absoluate path.
         if Path(file).is_file():
-            return file
+            return Path(file)
 
         # Check for relative path.
         if self.root.joinpath(file).is_file():
@@ -297,9 +298,10 @@ class HashFS(object):
             return filepath
 
         # Check for sharded path with any extension.
-        paths = glob.glob("{0}.*".format(filepath))
-        if paths:
-            return paths[0]
+        filepath = Path(filepath)
+        paths = filepath.parent.glob(f"{filepath.name}*")
+        for i in paths:
+            return i
 
         # Could not determine a match.
         return None
@@ -329,7 +331,7 @@ class HashFS(object):
         """Shard content ID into subfolders."""
         return shard(id, self.depth, self.width)
 
-    def unshard(self, path):
+    def unshard(self, path: Path) -> str:
         """Unshard path to determine hash value."""
         if not self.haspath(path):
             raise ValueError(

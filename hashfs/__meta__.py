@@ -6,7 +6,7 @@ __title__ = "hashfs2"
 __summary__ = "A content-addressable file management system."
 __url__ = "https://github.com/ramwin/hashfs"
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 __install_requires__ = []
 __tests_require__ = ["tox"]
