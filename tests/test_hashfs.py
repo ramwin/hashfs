@@ -9,6 +9,7 @@ import pytest
 
 import hashfs
 from hashfs._compat import to_bytes
+from hashfs.utils import shard
 
 
 @pytest.fixture
@@ -323,3 +324,12 @@ def test_hashfs_size(fs):
     expected = len(string.ascii_lowercase) + len(string.ascii_uppercase)
 
     assert fs.size() == expected
+
+
+def test_utils():
+    assert shard("my_photo_abcde", depth=2, width=3, prefix="my_photo_") == [
+            "my_photo_abc", "de",
+    ]
+    assert shard("0xabcde012", depth=2, width=3, prefix="0x") == [
+            "0xabc", "de0", "12",
+    ]
